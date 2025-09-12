@@ -24,6 +24,11 @@ public class FoodController {
         this.foodService = foodService;
     }
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello from FoodController";
+    }
+
     @GetMapping("/get-all")
     public ResponseEntity<?> getAllFoods() {
         return ResponseEntity.ok(foodService.getAllFoods());
