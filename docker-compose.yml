@@ -1,0 +1,46 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: restaurantfoodorder
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_user
+    ports:
+      - "3307:3306" # 3307 trên máy host ánh xạ tới 3306 trong container
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:8.0
+    container_name: redis_container
+    restart: always
+    environment:
+      REDIS_PASSWORD: yourpassword
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  app:
+    build: .
+    container_name: be-foodorder_container
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8081:8080"
+    environment:
+      DB_HOST: mysql # Host cho MySQL trong Docker
+      DB_PORT: 3306
+      DB_USER: app_user
+      DB_PASSWORD: app_user
+      REDIS_HOST: redis # Host cho Redis trong Docker
+      REDIS_PORT: 6379
+
+volumes:
+  mysql_data:
+  redis_data:
