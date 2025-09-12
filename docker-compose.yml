@@ -25,7 +25,8 @@ services:
       - redis_data:/data
 
   app:
-    build: .
+    image: hoanle2018/be-restaurant-food-order
+    # build: .
     container_name: be-foodorder_container
     restart: always
     depends_on:

@@ -22,7 +22,7 @@ jobs:
           MYSQL_USER: app_user
           MYSQL_PASSWORD: app_user
         ports:
-          - 3307:3306
+          - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping -h localhost -u root -p123456"
           --health-interval=10s
