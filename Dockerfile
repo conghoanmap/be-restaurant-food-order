@@ -11,7 +11,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy file jar vào container
-COPY target/foodorder-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/foodorder-0.0.1-SNAPSHOT.jar app.jar
 
 # Cổng ứng dụng
 EXPOSE 8080
