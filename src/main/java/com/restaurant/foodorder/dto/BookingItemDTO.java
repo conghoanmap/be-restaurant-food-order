@@ -1,6 +1,5 @@
-package com.restaurant.foodorder.model.temp_redis;
+package com.restaurant.foodorder.dto;
 
-import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,10 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TempOrderItem implements Serializable {
+public class BookingItemDTO {
     private Long foodId;
     private String foodName;
-    private int quantity;
     private double price;
+    private int quantity;
     private String notes;
 }

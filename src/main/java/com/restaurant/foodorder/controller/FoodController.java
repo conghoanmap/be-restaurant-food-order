@@ -1,6 +1,7 @@
 package com.restaurant.foodorder.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +25,6 @@ public class FoodController {
         this.foodService = foodService;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello from FoodControllerrrrrrr";
-    }
-
     @GetMapping("/get-all")
     public ResponseEntity<?> getAllFoods() {
         return ResponseEntity.ok(foodService.getAllFoods());
@@ -39,16 +35,19 @@ public class FoodController {
         return ResponseEntity.ok(foodService.getFoodById(foodId));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @PostMapping("/create")
     public ResponseEntity<?> createFood(@Valid @RequestBody FoodReq foodReq) {
         return ResponseEntity.ok(foodService.createFood(foodReq));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @PutMapping("/update")
     public ResponseEntity<?> updateFood(@RequestParam Long foodId, @Valid @RequestBody FoodReq foodReq) {
         return ResponseEntity.ok(foodService.updateFood(foodId, foodReq));
     }
 
+    @PreAuthorize("hasAuthority('ROLE_MANAGER')")
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteFood(@RequestParam Long foodId) {
         return ResponseEntity.ok(foodService.deleteFood(foodId));

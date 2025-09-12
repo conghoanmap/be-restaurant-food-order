@@ -20,7 +20,10 @@ import com.restaurant.foodorder.repo.OrderRepo;
 import com.restaurant.foodorder.repo.TableRepo;
 import com.restaurant.foodorder.repo.TempOrderRepo;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class OrderService {
 
     private final TempOrderRepo TempOrderRepo;
@@ -41,6 +44,10 @@ public class OrderService {
 
     @Transactional
     public APIResponse<TempOrder> createTempOrder(Long TableId, List<TempOrderItem> items) {
+        // Kiểm tra nếu đã có đơn hàng tạm thời cho bàn này chưa
+        if (TempOrderRepo.existsById(TableId)) {
+            return new APIResponse<>(400, "Temporary order already exists for this table", null);
+        }
         TempOrder tempOrder = new TempOrder();
         tempOrder.setTableId(TableId);
         double totalPrice = items.stream().mapToDouble(TempOrderItem::getPrice).sum();
@@ -50,9 +57,11 @@ public class OrderService {
         TableAndStatus tableAndStatus = new TableAndStatus(TableId, "Occupied", totalPrice);
         messagingTemplate.convertAndSend("/topic/temp-orders", tableAndStatus); // Gửi thông báo qua WebSocket để cập
                                                                                 // nhật UI
-        return new APIResponse<>(200, "Temporary order created successfullyyyyy", savedOrder);
+        log.info("Created temporary order for table {}: {}", TableId, savedOrder);
+        return new APIResponse<>(200, "Temporary order created successfully", savedOrder);
     }
 
+    @Transactional
     public APIResponse<TempOrder> updateTempOrder(Long tableId, List<TempOrderItem> items) {
         TempOrder existingOrder = TempOrderRepo.findById(tableId).orElse(null);
         if (existingOrder == null) {
@@ -64,7 +73,7 @@ public class OrderService {
         TempOrder updatedOrder = TempOrderRepo.save(existingOrder);
         TableAndStatus tableAndStatus = new TableAndStatus(tableId, "Occupied", totalPrice);
         messagingTemplate.convertAndSend("/topic/temp-orders", tableAndStatus); // Gửi thông báo qua WebSocket để cập
-                                                                                // nhật UI
+        log.info("Updated temporary order for table {}: {}", tableId, updatedOrder);
         return new APIResponse<>(200, "Temporary order updated successfully", updatedOrder);
     }
 
@@ -96,7 +105,7 @@ public class OrderService {
             orderItem.setQuantity(tempItem.getQuantity());
             orderItem.setPrice(tempItem.getPrice());
             orderItem.setOrder(order);
-            orderItem.setNote(tempItem.getNote());
+            orderItem.setNotes(tempItem.getNotes());
             return orderItem;
         }).toList();
         order.setOrderItems(orderItems);
@@ -108,6 +117,7 @@ public class OrderService {
         messagingTemplate.convertAndSend("/topic/temp-orders", tableAndStatus);
         // Xóa đơn hàng tạm thời khỏi Redis
         TempOrderRepo.deleteById(tableId);
+        log.info("Closed and saved order for table {}: {}", tableId, order);
         return new APIResponse<>(200, "Order closed and saved successfully", tempOrder);
     }
 
