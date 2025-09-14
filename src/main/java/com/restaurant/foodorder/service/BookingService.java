@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.restaurant.foodorder.dto.APIResponse;
-import com.restaurant.foodorder.dto.BookingRequest;
-import com.restaurant.foodorder.dto.BookingResponse;
+import com.restaurant.foodorder.dto.BookingReq;
+import com.restaurant.foodorder.dto.BookingRes;
 import com.restaurant.foodorder.model.Booking;
 import com.restaurant.foodorder.model.BookingItem;
 import com.restaurant.foodorder.model.Food;
@@ -30,7 +30,7 @@ public class BookingService {
     }
 
     @Transactional
-    public APIResponse<BookingResponse> createBooking(BookingRequest bookingRequest) {
+    public APIResponse<BookingRes> createBooking(BookingReq bookingRequest) {
         Booking booking = new Booking();
         booking.setPeoples(bookingRequest.getPeoples());
         booking.setCustomerName(bookingRequest.getCustomerName());
@@ -49,11 +49,6 @@ public class BookingService {
         // ...
         // Tính tong giá trị đơn hàng
         if (!bookingRequest.getBookingItems().isEmpty()) {
-            double totalAmount = bookingRequest.getBookingItems().stream()
-                    .mapToDouble(item -> item.getQuantity() * item.getPrice())
-                    .sum();
-            booking.setTotalPrice(totalAmount);
-            booking.setDepositAmount(totalAmount * DEPOSIT_RATE);
             // Lưu thông tin các món ăn trong đơn đặt bàn
             List<BookingItem> bookingItems = new ArrayList<>();
             bookingRequest.getBookingItems().forEach(item -> {
@@ -67,14 +62,23 @@ public class BookingService {
                     item.setPrice(food.getPrice());
                     item.setFoodName(food.getName());
                     bookingItem.setFood(food);
+                } else {
+                    bookingItem.setPrice(item.getPrice());
                 }
                 bookingItems.add(bookingItem);
             });
+
+            double totalAmount = bookingItems.stream()
+                    .mapToDouble(item -> item.getQuantity() * item.getPrice())
+                    .sum();
+            booking.setTotalPrice(totalAmount);
+            booking.setDepositAmount(totalAmount * DEPOSIT_RATE);
+
             booking.setBookingItems(bookingItems);
             bookingRepo.save(booking);
         }
         booking.setStatusPayment("Chưa thanh toán");
-        return new APIResponse<>(200, "Booking created successfully", BookingResponse.builder()
+        return new APIResponse<>(200, "Booking created successfully", BookingRes.builder()
                 .id(booking.getId())
                 .peoples(booking.getPeoples())
                 .customerName(booking.getCustomerName())
@@ -89,5 +93,16 @@ public class BookingService {
                 .bookingItems(bookingRequest.getBookingItems())
                 .bookingStatus(booking.getBookingStatus().getDescription())
                 .build());
+    }
+
+    public void updatePaymentStatus(Long bookingId, String status) {
+        Booking booking = bookingRepo.findById(bookingId).orElse(null);
+        if (booking != null) {
+            booking.setStatusPayment(status);
+            bookingRepo.save(booking);
+            log.info("Updated payment status for booking {}: {}", bookingId, status);
+        } else {
+            log.warn("Booking not found: {}", bookingId);
+        }
     }
 }
