@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.restaurant.foodorder.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,11 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VnPayController {
     private final VnPayService vnPayService;
-    private final BookingService bookingService;
 
-    public VnPayController(VnPayService vnPayService, BookingService bookingService) {
+    public VnPayController(VnPayService vnPayService) {
         this.vnPayService = vnPayService;
-        this.bookingService = bookingService;
     }
 
     @GetMapping("/create")
@@ -38,7 +35,8 @@ public class VnPayController {
             String vnp_Amount = allParams.get("vnp_Amount"); // Số tiền thanh toán
             log.info("Payment successful for orderId: {}, amount: {}", vnp_TxnRef, vnp_Amount);
             // Cập nhật trạng thái đơn hàng trong hệ thống
-            bookingService.updatePaymentStatus(Long.parseLong(vnp_TxnRef), "Đã thanh toán");
+            // bookingService.updatePaymentStatus(Long.parseLong(vnp_TxnRef), "Đã thanh
+            // toán");
             return "Thanh toán thành công!";
         } else {
             log.error("Payment failed with response code: {}", vnp_ResponseCode);

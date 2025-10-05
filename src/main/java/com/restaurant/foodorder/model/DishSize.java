@@ -1,5 +1,7 @@
 package com.restaurant.foodorder.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,20 +17,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "order_items")
-public class OrderItem {
+@Table(name = "dish_sizes")
+public class DishSize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int quantity;
-    private double price;
-    private String notes;
+    private String name; // Tên kích thước (ví dụ: Small, Medium, Large)
+    private double additionalPrice; // Giá thêm cho kích thước này
 
     @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
-
-    @ManyToOne
-    @JoinColumn(name = "food_id")
-    private Food food;
+    @JoinColumn(name = "dish_id")
+    @JsonBackReference
+    private Dish dish;
 }

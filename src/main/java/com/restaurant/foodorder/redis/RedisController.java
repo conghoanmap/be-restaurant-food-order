@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/redis")
 public class RedisController {
     private final RedisService redisService;
+    private final RedisPublisher redisPublisher;
 
-    public RedisController(RedisService redisService) {
+    public RedisController(RedisService redisService, RedisPublisher redisPublisher) {
         this.redisService = redisService;
+        this.redisPublisher = redisPublisher;
     }
 
     @GetMapping("/get")
@@ -45,5 +47,11 @@ public class RedisController {
     public ResponseEntity<String> deleteData(@RequestParam String key) {
         redisService.delete(key);
         return ResponseEntity.ok("Data deleted successfully");
+    }
+
+    @PostMapping("/publish")
+    public ResponseEntity<String> publishMessage(@RequestParam String message) {
+        redisPublisher.publish("news", message);
+        return ResponseEntity.ok("Message published successfully");
     }
 }

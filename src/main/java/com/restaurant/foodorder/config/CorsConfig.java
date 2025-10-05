@@ -15,8 +15,9 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry corsRegistry) {
                 corsRegistry
                         .addMapping("/**")
-                        .allowedOrigins("http://localhost:5173", "http://localhost:4200") // URL cụ thể bạn muốn cho
-                                                                                          // phép
+                        .allowedOrigins("*")
+                        // .allowedOrigins("http://localhost:5173", "http://localhost:4200")
+                        // URL cụ thể bạn muốn cho phép
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*");
             }

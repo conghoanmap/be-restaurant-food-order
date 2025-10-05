@@ -28,11 +28,11 @@ public class UploadImageFile {
     public APIResponse<String> uploadImage(MultipartFile file) throws IOException {
         assert file.getOriginalFilename() != null;
         String publicValue = generatePublicValue(file.getOriginalFilename());
-        log.info("Public value: {}" + publicValue);
+        log.info("Public value: " + publicValue);
         String extension = getFileName(file.getOriginalFilename())[1];
-        log.info("Extension: {}" + extension);
+        log.info("Extension: " + extension);
         File fileUpload = convert(file);
-        log.info("File upload: {}" + fileUpload);
+        log.info("File upload: " + fileUpload);
         cloudinary.uploader().upload(fileUpload, ObjectUtils.asMap("public_id", publicValue));
         cleanDisk(fileUpload);
         String filePath = cloudinary.url().generate(StringUtils.join(publicValue, ".", extension));
@@ -51,7 +51,7 @@ public class UploadImageFile {
 
     private void cleanDisk(File file) {
         try {
-            log.info("File path: {}" + file.toPath());
+            log.info("File path: " + file.toPath());
             Path filePath = file.toPath();
             Files.delete(filePath);
         } catch (Exception e) {

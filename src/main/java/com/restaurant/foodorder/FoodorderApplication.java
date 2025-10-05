@@ -27,6 +27,9 @@ public class FoodorderApplication {
 			if (!roleRepository.existsById("ROLE_STAFF")) {
 				roleRepository.save(new Role("ROLE_STAFF"));
 			}
+			if (!roleRepository.existsById("ROLE_ADMIN")) {
+				roleRepository.save(new Role("ROLE_ADMIN"));
+			}
 		};
 	}
 

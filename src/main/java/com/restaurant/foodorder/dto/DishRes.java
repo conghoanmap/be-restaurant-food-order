@@ -1,5 +1,7 @@
 package com.restaurant.foodorder.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +9,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FoodDetail {
+public class DishRes {
     private Long id;
     private String name;
+    private String description;
     private double price;
     private String image;
-    private String description;
-    private boolean available;
-    private String foodTypeName;
+
+    private List<DishSizeDTO> dishSizes;
+    private List<String> dishTypeNames;
 }

@@ -1,12 +1,10 @@
 package com.restaurant.foodorder.auth.service;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -88,7 +86,7 @@ public class UserService {
                     .expirationTime("Expiration time: 60 minutes").roles(
                             user.getRoles().stream().map(role -> role.getRoleName()).collect(Collectors.toSet()))
                     .build();
-            log.info("User {} logged in at {}", user.getEmail(), LocalDateTime.now());
+            log.info("User {} logged in", user.getEmail());
 
             return new APIResponse<>(200, "Login successfully", logRegResponse);
         } catch (Exception ex) {

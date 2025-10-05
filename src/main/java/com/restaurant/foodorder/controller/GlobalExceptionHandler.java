@@ -10,8 +10,8 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import com.restaurant.foodorder.dto.APIResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,5 +37,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleAuthorizationDeniedException(AuthorizationDeniedException ex) {
         APIResponse<?> response = new APIResponse<>(403, "Authorization denied", null);
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<?> handleExpiredJwtException(ExpiredJwtException ex) {
+        APIResponse<?> response = new APIResponse<>(401, "JWT token expired", null);
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }
