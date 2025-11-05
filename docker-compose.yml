@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: restaurantfoodorder
+      MYSQL_DATABASE: cicispizzadb
       MYSQL_USER: app_user
       MYSQL_PASSWORD: app_user
     ports:
@@ -43,6 +43,7 @@ services:
     depends_on:
       - mysql
       - redis
+      - rabbitmq
     ports:
       - "8080:8080"
     environment:
@@ -53,6 +54,11 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: ${REDIS_HOST} # Host cho Redis trong Docker
       REDIS_PORT: ${REDIS_PORT}
+      RABBITMQ_HOST: ${RABBITMQ_HOST} # Host cho RabbitMQ trong Docker
+      RABBITMQ_PORT: ${RABBITMQ_PORT}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+      RABBITMQ_VHOST: ${RABBITMQ_VHOST}
 
 volumes:
   mysql_data:
