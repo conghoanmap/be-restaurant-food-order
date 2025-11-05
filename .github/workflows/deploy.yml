@@ -18,7 +18,7 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: 123456
-          MYSQL_DATABASE: restaurantfoodorder
+          MYSQL_DATABASE: cicispizzadb
           MYSQL_USER: app_user
           MYSQL_PASSWORD: app_user
         ports:
@@ -33,6 +33,15 @@ jobs:
         image: redis:8.0
         ports:
           - 6379:6379
+
+      rabbitmq:
+        image: rabbitmq:4-management
+        ports:
+          - 5672:5672
+          - 15672:15672
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
 
     steps:
       # Lấy mã nguồn từ kho lưu trữ
