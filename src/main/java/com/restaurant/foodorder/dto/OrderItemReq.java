@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DishSizeDTO {
-    private Long sizeId;
-    private String name;
-    private double additionalPrice;
+public class OrderItemReq {
+    private String dishId;
+    private String dishName;
+    private double price;
+    private int quantity;
 }

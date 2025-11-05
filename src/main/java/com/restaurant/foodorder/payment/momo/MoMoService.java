@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.restaurant.foodorder.dto.APIResponse;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,12 +43,11 @@ public class MoMoService {
     @Value("${momo.ipn-url}")
     private String ipnUrl;
 
-    public MoMoResponse createPayment(String orderId, long amount, String orderInfo, String returnUrl,
+    public APIResponse<MoMoResponse> createPayment(String orderId, long amount, String orderInfo, String returnUrl,
             String paymentMethod) {
         try {
             String requestId = UUID.randomUUID().toString();
             String amountt = String.valueOf(amount);
-            String ipnUrl = returnUrl != null ? returnUrl : this.ipnUrl;
             String requestType = "captureWallet";
             switch (paymentMethod) {
                 case "QR_CODE":
@@ -82,8 +84,8 @@ public class MoMoService {
             body.put("amount", amount);
             body.put("orderId", orderId);
             body.put("orderInfo", orderInfo);
-            body.put("redirectUrl", redirectUrl);
-            body.put("ipnUrl", ipnUrl);
+            body.put("redirectUrl", this.redirectUrl);
+            body.put("ipnUrl", this.ipnUrl);
             body.put("requestType", requestType);
             body.put("signature", signature);
             body.put("extraData", "");
@@ -92,10 +94,10 @@ public class MoMoService {
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<MoMoResponse> response = restTemplate.postForEntity(endpoint,
                     body, MoMoResponse.class);
-            return response.getBody();
+            return new APIResponse<>(200, "Create MoMo payment successfully", response.getBody());
         } catch (Exception e) {
             log.error("Error creating MoMo payment", e);
-            return null;
+            return new APIResponse<>(500, "Error creating MoMo payment", null);
         }
     }
 

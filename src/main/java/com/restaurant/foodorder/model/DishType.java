@@ -1,7 +1,9 @@
 package com.restaurant.foodorder.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -19,6 +21,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -26,6 +29,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "dish_types")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class DishType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +39,7 @@ public class DishType {
 
     @ManyToMany(mappedBy = "dishTypes")
     @JsonBackReference
-    private List<Dish> dishes = new ArrayList<>();
+    private Set<Dish> dishes = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "parent_id")

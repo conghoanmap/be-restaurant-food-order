@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Table(name = "roles")
 @RequiredArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL) // Loại bỏ các trường null khi trả về response
+@JsonIgnoreProperties(ignoreUnknown = true) // Bỏ qua các trường không cần thiết khi nhận response
 public class Role {
     @Id
     @Column(name = "role_name")

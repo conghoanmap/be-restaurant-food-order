@@ -2,19 +2,18 @@ package com.restaurant.foodorder.enumm;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum PaymentMethod {
-    COD("COD", "Thanh toán khi nhận hàng"),
-    CASH("CASH",
-            "Thanh toán tiền mặt"),
-    MOMO("MOMO",
-            "Thanh toán qua ví điện tử MoMo"),
-    VNPAY("VNPAY",
-            "Thanh toán qua ví điện tử VNPAY");
+public enum OrderStatus {
+    PENDING("PENDING", "Đang chờ xử lý"),
+    CONFIRMED("CONFIRMED", "Đã xác nhận"),
+    COOKING("COOKING", "Đang chế biến"),
+    CANCELED("CANCELED", "Đã hủy"),
+    DELIVERING("DELIVERING", "Đang giao hàng"),
+    DELIVERED("DELIVERED", "Đã giao hàng");
 
     private final String code;
     private final String description;
 
-    PaymentMethod(String code, String description) {
+    OrderStatus(String code, String description) {
         this.code = code;
         this.description = description;
     }

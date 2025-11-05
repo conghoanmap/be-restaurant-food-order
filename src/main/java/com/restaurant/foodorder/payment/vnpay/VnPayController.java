@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.restaurant.foodorder.service.OrderService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,9 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VnPayController {
     private final VnPayService vnPayService;
+    private final OrderService orderService;
 
-    public VnPayController(VnPayService vnPayService) {
+    public VnPayController(VnPayService vnPayService, OrderService orderService) {
         this.vnPayService = vnPayService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/create")
@@ -28,19 +33,13 @@ public class VnPayController {
 
     // Xử lý callback từ VNPay
     @GetMapping("/return")
-    public String vnpayReturn(HttpServletRequest request, @RequestParam Map<String, String> allParams) {
+    public ResponseEntity<?> vnpayReturn(HttpServletRequest request, @RequestParam Map<String, String> allParams) {
         String vnp_ResponseCode = allParams.get("vnp_ResponseCode");
         if ("00".equals(vnp_ResponseCode)) {
             String vnp_TxnRef = allParams.get("vnp_TxnRef"); // Mã đơn hàng
-            String vnp_Amount = allParams.get("vnp_Amount"); // Số tiền thanh toán
-            log.info("Payment successful for orderId: {}, amount: {}", vnp_TxnRef, vnp_Amount);
-            // Cập nhật trạng thái đơn hàng trong hệ thống
-            // bookingService.updatePaymentStatus(Long.parseLong(vnp_TxnRef), "Đã thanh
-            // toán");
-            return "Thanh toán thành công!";
+            return ResponseEntity.ok(orderService.updatePaymentStatus(vnp_TxnRef, true));
         } else {
-            log.error("Payment failed with response code: {}", vnp_ResponseCode);
-            return "Thanh toán thất bại, mã lỗi: " + vnp_ResponseCode;
+            return ResponseEntity.ok("Thanh toán thất bại, mã lỗi: " + vnp_ResponseCode);
         }
     }
 }

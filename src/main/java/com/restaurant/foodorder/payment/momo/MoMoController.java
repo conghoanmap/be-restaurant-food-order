@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.restaurant.foodorder.service.OrderService;
+
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -14,32 +17,27 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MoMoController {
     private final MoMoService moMoService;
+    private final OrderService orderService;
 
-    public MoMoController(MoMoService moMoService) {
+    public MoMoController(MoMoService moMoService, OrderService orderService) {
         this.moMoService = moMoService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/create")
     public ResponseEntity<?> createPayment(@RequestParam String orderId, @RequestParam Long amount,
             @RequestParam String orderInfo, @RequestParam String returnUrl, @RequestParam String paymentMethod) {
-        String newOrderId = "RFOBOOKING" + orderId;
-        return ResponseEntity.ok(moMoService.createPayment(newOrderId, amount, orderInfo, returnUrl, paymentMethod));
+        return ResponseEntity.ok(moMoService.createPayment(orderId, amount, orderInfo, returnUrl, paymentMethod));
     }
 
     @PostMapping("/return")
-    public String moMoReturn(@RequestBody MoMoReturn moMoReturn) {
+    public ResponseEntity<?> moMoReturn(@RequestBody MoMoReturn moMoReturn) {
         if (moMoReturn.getResultCode() == 0) {
-            // Cắt prefix "RFOBOOKING" khỏi orderId
-            // String originalOrderId = moMoReturn.getOrderId().replace("RFOBOOKING", "");
-            // Xử lý logic sau khi thanh toán thành công
-            log.info("Payment successful for orderId: {}", moMoReturn.getOrderId());
-            // Cập nhật trạng thái đơn hàng trong hệ thống
-            // bookingService.updatePaymentStatus(Long.parseLong(originalOrderId), "Đã thanh
-            // toán");
+            return ResponseEntity.ok(orderService.updatePaymentStatus(moMoReturn.getOrderId(), true));
         } else {
             log.error("Payment for orderId: {} failed with error code: {}", moMoReturn.getOrderId(),
                     moMoReturn.getResultCode());
         }
-        return "Redirect received from MoMo!";
+        return ResponseEntity.ok("Redirect received from MoMo!");
     }
 }
